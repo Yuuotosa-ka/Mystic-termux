@@ -56,8 +56,13 @@ handler.command = /^s(tic?ker)?(gif)?(wm)?$/i
 export default handler
 const isUrl = (text) => text.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)(jpe?g|gif|png)/, 'gi'))
 async function createSticker(img, url, packName, authorName, quality) {
-let stickerMetadata = { type: 'full', pack: packName, author: authorName, quality }
-return (new Sticker(img ? img : url, stickerMetadata)).toBuffer()}
+  try {
+    let stickerMetadata = { type: 'full', pack: packName, author: authorName, quality }
+    return (new Sticker(img ? img : url, stickerMetadata)).toBuffer()
+  } catch (error) {
+    console.log(error) // aquí puedes imprimir el error o hacer algo más
+  }
+}
 async function mp4ToWebp(file, stickerMetadata) {
 if (stickerMetadata) {
 if (!stickerMetadata.pack) stickerMetadata.pack = '‎'

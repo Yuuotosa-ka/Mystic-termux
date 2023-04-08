@@ -26,7 +26,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     } else throw `*[❗𝐈𝐍𝐅𝐎❗] 𝚁𝙴𝚂𝙿𝙾𝙽𝙳𝙴 𝙰 𝚄𝙽 𝚅𝙸𝙳𝙴𝙾, 𝙸𝙼𝙰𝙶𝙴𝙽 𝙾 𝙸𝙽𝚂𝙴𝚁𝚃𝙴 𝙴𝙻 𝙴𝙽𝙻𝙰𝙲𝙴 𝙳𝙴 𝚄𝙽𝙰 𝙸𝙼𝙰𝙶𝙴𝙽 𝚃𝙴𝚁𝙼𝙸𝙽𝙰𝙲𝙸𝙾́𝙽 .𝚓𝚙𝚐 𝙴𝙻 𝙲𝚄𝙰𝙻 𝚂𝙴𝚁𝙰 𝙲𝙾𝙽𝚅𝙴𝚁𝚃𝙸𝙳𝙾 𝙴𝙽 𝚂𝚃𝙸𝙲𝙺𝙴𝚁, 𝙳𝙴𝙱𝙴 𝚁𝙴𝚂𝙿𝙾𝙽𝙳𝙴𝚁 𝙾 𝚄𝚂𝙰𝚁 𝙴𝙻 𝙲𝙾𝙼𝙰𝙽𝙳𝙾 ${usedPrefix + command}*`
   } catch {
     try {
-      let out = await processMedia(mime, img)
+      let out = await createSticker(img, mime)
       console.log(out)
       stiker = await sticker(false, out, global.packname, global.author)
       if (args[0] && isUrl(args[0])) {
@@ -51,7 +51,12 @@ async function createSticker(img, url, packName, authorName, quality) {
     let stickerMetadata = { type: 'full', pack: packName, author: authorName, quality }
     return (new Sticker(img ? img : url, stickerMetadata)).toBuffer()
   } catch (error) {
-    console.log(error) // aquí puedes imprimir el error o hacer algo más
+       let out
+       if (/webp/g.test(url)) out = await webp2png(img)
+       else if (/image/g.test(url)) out = await uploadImage(img)
+       else if (/video/g.test(url)) out = await uploadFile(img)
+       if (typeof out !== 'string') out = await uploadImage(img)
+     return out 
   }
 }
 async function mp4ToWebp(file, stickerMetadata) {
@@ -64,14 +69,6 @@ let getBase64 = file.toString('base64')
 const Format = { file: `data:video/mp4;base64,${getBase64}`, processOptions: { crop: stickerMetadata?.crop, startTime: '00:00:00.0', endTime: '00:00:7.0', loop: 0 }, stickerMetadata: { ...stickerMetadata }, sessionInfo: { WA_VERSION: '2.2106.5', PAGE_UA: 'WhatsApp/2.2037.6 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36', WA_AUTOMATE_VERSION: '3.6.10 UPDATE AVAILABLE: 3.6.11', BROWSER_VERSION: 'HeadlessChrome/88.0.4324.190', OS: 'Windows Server 2016', START_TS: 1614310326309, NUM: '6247', LAUNCH_TIME_MS: 7934, PHONE_VERSION: '2.20.205.16' }, config: { sessionId: 'session', headless: true, qrTimeout: 20, authTimeout: 0, cacheEnabled: false, useChrome: true, killProcessOnBrowserClose: true, throwErrorOnTosBlock: false, chromiumArgs: ['--no-sandbox', '--disable-setuid-sandbox', '--aggressive-cache-discard', '--disable-cache', '--disable-application-cache', '--disable-offline-load-stale-cache', '--disk-cache-size=0'], executablePath: 'C:\\\\Program Files (x86)\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe', skipBrokenMethodsCheck: true, stickerServerEndpoint: true }}
 let res = await fetch('https://sticker-api.openwa.dev/convertMp4BufferToWebpDataUrl', { method: 'post', headers: { Accept: 'application/json, text/plain, /', 'Content-Type': 'application/json;charset=utf-8', }, body: JSON.stringify(Format)})
 return Buffer.from((await res.text()).split(';base64,')[1], 'base64')}
-async function processMedia(mime, img) {
-let out
-if (/webp/g.test(mime)) out = await webp2png(img)
-else if (/image/g.test(mime)) out = await uploadImage(img)
-else if (/video/g.test(mime)) out = await uploadFile(img)
-if (typeof out !== 'string') out = await uploadImage(img)
-return out }
-
 
 /*import fetch from 'node-fetch'
 import { addExif } from '../lib/sticker.js'

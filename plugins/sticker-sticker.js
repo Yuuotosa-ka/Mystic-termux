@@ -28,7 +28,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     try {
       let out = await createSticker(img, mime)
       console.log(out)
-      stiker = await sticker(false, out, global.packname, global.author)
+      stiker = await sticker(false, out.out, global.packname, global.author)
       if (args[0] && isUrl(args[0])) {
         stiker = await sticker(false, args[0], global.packname, global.author)
       } else {
@@ -56,7 +56,7 @@ async function createSticker(img, url, packName, authorName, quality) {
        else if (/image/g.test(url)) out = await uploadImage(img)
        else if (/video/g.test(url)) out = await uploadFile(img)
        if (typeof out !== 'string') out = await uploadImage(img)
-     return out 
+     return out
   }
 }
 async function mp4ToWebp(file, stickerMetadata) {

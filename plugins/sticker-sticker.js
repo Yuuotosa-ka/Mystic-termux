@@ -27,8 +27,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
   } catch {
     try {
       let out = await createSticker(img, mime)
-      console.log(out)
-      stiker = await sticker(false, out.out, global.packname, global.author)
+      stiker = await sticker(false, out, global.packname, global.author)
       if (args[0] && isUrl(args[0])) {
         stiker = await sticker(false, args[0], global.packname, global.author)
       } else {
@@ -38,6 +37,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
       stiker = `*[❗𝐈𝐍𝐅𝐎❗] 𝙾𝙲𝚄𝚁𝚁𝙸𝙾 𝚄𝙽 𝙴𝚁𝚁𝙾𝚁, 𝚅𝚄𝙴𝙻𝚅𝙰 𝙰 𝙸𝙽𝚃𝙴𝚁𝙽𝚃𝙰𝚁𝙻𝙾. 𝚁𝙴𝚂𝙿𝙾𝙽𝙳𝙴 𝙰 𝚄𝙽 𝚅𝙸𝙳𝙴𝙾, 𝙸𝙼𝙰𝙶𝙴𝙽 𝙾 𝙸𝙽𝚂𝙴𝚁𝚃𝙴 𝙴𝙻 𝙴𝙽𝙻𝙰𝙲𝙴 𝙳𝙴 𝚄𝙽𝙰 𝙸𝙼𝙰𝙶𝙴𝙽 𝚃𝙴𝚁𝙼𝙸𝙽𝙰𝙲𝙸𝙾́𝙽 .𝚓𝚙𝚐 𝙴𝙻 𝙲𝚄𝙰𝙻 𝚂𝙴𝚁𝙰 𝙲𝙾𝙽𝚅𝙴𝚁𝚃𝙸𝙳𝙾 𝙴𝙽 𝚂𝚃𝙸𝙲𝙺𝙴𝚁*`	
     }
   } finally {
+    if (isUrl(stiker)) stiker = await createSticker(false, args[0], '', author, 20)
     m.reply(stiker)
   }
 }
